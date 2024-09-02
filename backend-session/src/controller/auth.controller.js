@@ -1,9 +1,14 @@
-//Auth controller
-
 import { connectDb } from "../db/database.js";
 
 export const register = async (req, res) => {
-  const connection = await connectDb();
+  let connection;
+  try {
+    connection = await connectDb();
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ message: "Error al conectar con la base de datos" });
+  }
 
   try {
     const { username, password } = req.body;
@@ -33,7 +38,14 @@ export const register = async (req, res) => {
 };
 
 export const login = async (req, res) => {
-  const connection = await connectDb();
+  let connection;
+  try {
+    connection = await connectDb();
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ message: "Error al conectar con la base de datos" });
+  }
 
   try {
     const { username, password } = req.body;
@@ -64,24 +76,32 @@ export const login = async (req, res) => {
 };
 
 export const session = async (req, res) => {
-  if (req.session.userId) {
-    return res.json({
-      loggedIn: true,
-      user: { id: req.session.userId, username: req.session.username },
-    });
-  } else {
-    return res
-      .status(401)
-      .json({ loggedIn: false, message: "No hay sesión activa" });
+  try {
+    if (req.session.userId) {
+      return res.json({
+        loggedIn: true,
+        user: { id: req.session.userId, username: req.session.username },
+      });
+    } else {
+      return res
+        .status(401)
+        .json({ loggedIn: false, message: "No hay sesión activa" });
+    }
+  } catch (error) {
+    return res.status(500).json({ message: "Error en el servidor" });
   }
 };
 
 export const logout = async (req, res) => {
-  req.session.destroy((err) => {
-    if (err) {
-      return res.status(500).json({ message: "Error al cerrar la sesión" });
-    }
-    res.clearCookie("connect.sid"); // Nombre de cookie por defecto para express-session
-    return res.json({ message: "Sesión cerrada exitosamente" });
-  });
+  try {
+    req.session.destroy((err) => {
+      if (err) {
+        return res.status(500).json({ message: "Error al cerrar la sesión" });
+      }
+      res.clearCookie("connect.sid"); // Nombre de cookie por defecto para express-session
+      return res.json({ message: "Sesión cerrada exitosamente" });
+    });
+  } catch (error) {
+    return res.status(500).json({ message: "Error en el servidor" });
+  }
 };

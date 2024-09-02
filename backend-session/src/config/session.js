@@ -1,5 +1,7 @@
+import { env } from "./environment";
+
 export const sessionConfig = {
-  secret: "mi-string-secreto3215",
+  secret: env.SESSION.SECRET,
   resave: false,
   saveUninitialized: true,
   cookie: {

@@ -12,4 +12,7 @@ export const env = {
     PASS: process.env.DB_PASSWORD,
     DATABASE: process.env.DB_NAME,
   },
+  SESSION: {
+    SECRET: process.env.SESSION_SECRET,
+  },
 };
