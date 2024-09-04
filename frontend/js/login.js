@@ -5,29 +5,25 @@ document
 
     const username = document.getElementById("username").value;
     const password = document.getElementById("password").value;
+    const divError = document.getElementById("message");
 
-    // Validación básica
     if (!username || !password) {
       document.getElementById("message").innerText =
         "Por favor, completa todos los campos.";
       return;
     }
 
-    fetch("http://localhost:4000/auth/login", {
-      method: "POST",
-      credentials: "include", // Importante para enviar las cookies de sesión
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ username, password }),
-    });
     try {
-      const response = await fetch("http://localhost:4000/auth/session", {
-        credentials: "include", // Importante para obtener las cookies de sesión
+      const loginResponse = await fetch("http://localhost:4000/auth/login", {
+        method: "POST",
+        credentials: "include", // Importante para enviar las cookies de sesión
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ username, password }),
       });
-      const divError = document.getElementById("message");
 
-      if (!response.ok) {
+      if (!loginResponse.ok) {
         divError.innerText = "Credenciales inválidas";
         divError.classList.add(
           "bg-danger",
@@ -45,8 +41,19 @@ document
         return;
       }
 
-      const data = await response.json();
+      const sessionResponse = await fetch(
+        "http://localhost:4000/auth/session",
+        {
+          credentials: "include", // Importante para obtener las cookies de sesión
+        }
+      );
+
+      const data = await sessionResponse.json();
       console.log(data);
       window.location.href = "home.html";
-    } catch (error) {}
+    } catch (error) {
+      console.error("Error:", error);
+      document.getElementById("message").innerText =
+        "Ocurrió un error. Por favor, intenta nuevamente.";
+    }
   });
