@@ -21,7 +21,7 @@ export const validateJwt = async (req, res, next) => {
 
   const [user] = await connection.query(query, [decoded.userId]);
 
-  if (!user.length) {
+  if (user.length === 0) {
     return res.status(401).json({ message: "Token inválido" });
   }
 

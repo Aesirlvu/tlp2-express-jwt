@@ -8,7 +8,7 @@ export const generarJwt = (userId) => {
       payload,
       env.SECRET_KEY.JWT,
       {
-        expiresIn: "4h",
+        expiresIn: "5h",
       },
       (error, token) => {
         if (error) {

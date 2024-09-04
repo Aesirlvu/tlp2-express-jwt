@@ -61,16 +61,13 @@ export const userLogin = async (req, res) => {
   }
 };
 
-export const validateUserSession = [
-  validateJwt,
-  (req, res) => {
-    console.log(req.user);
-    return res.json({
-      message: "Acceso permitido a área protegida",
-      user: req.user,
-    });
-  },
-];
+export const validateUserSession = (req, res) => {
+  console.log(req.user);
+  return res.json({
+    message: "Acceso permitido a área protegida",
+    user: req.user,
+  });
+};
 
 export const logoutUser = (req, res) => {
   try {
