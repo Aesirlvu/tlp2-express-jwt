@@ -1,30 +1,20 @@
 import { Router } from "express";
-import { connectDB } from "../db/database";
+import {
+  userLogin,
+  logoutUser,
+  validateUserSession,
+  userRegister,
+} from "../controller/auth.js";
+import { validateJwt } from "../middlewares/validar-jwt.js";
 
-authRouter = Router();
+const authRouter = Router();
 
-authRouter.post("/login");
+authRouter.post("/register", userRegister);
 
-authRouter.post("/session", validarJwt, (req, res) => {
-  console.log(req.user);
-  return res.json({
-    message: "Acceso permitido a área protegida",
-    user: req.user,
-  });
-});
+authRouter.post("/login", userLogin);
 
-authRouter.post("/logout", (req, res) => {
-  try {
-    req.session.destroy((err) => {
-      if (err) {
-        return res.status(500).json({ message: "Error al cerrar sesión" });
-      }
+authRouter.get("/session", validateJwt, validateUserSession);
 
-      res.clearCookie("authToken");
-      return res.json({ message: "Cierre de sesión exitoso" });
-    });
-  } catch (error) {
-    console.error(error);
-    return res.status(500).json({ message: "Error Inesperado" });
-  }
-});
+authRouter.post("/logout", logoutUser);
+
+export default authRouter;
