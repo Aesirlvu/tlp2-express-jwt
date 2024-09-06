@@ -13,16 +13,12 @@ app.use(express.json());
 const HOST = env.SERVER.HOST;
 const PORT = env.SERVER.PORT;
 
-// Middlewares
 Middlewares(app);
 app.use(express.static(path.join(__dirname, "public")));
 
-// Rutas
 app.use("/auth", authRouter);
 
-const initSv = async () => {
+(async function () {
   await userEntity();
   app.listen(PORT, () => console.log(`Corriendo en: ${HOST}:${PORT} 👍`));
-};
-
-initSv();
+})();

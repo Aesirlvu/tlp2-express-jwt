@@ -1,52 +1,36 @@
 import { connectDb } from "../db/database.js";
 
 export const register = async (req, res) => {
-  let connection;
-  try {
-    connection = await connectDb();
-  } catch (error) {
-    return res
-      .status(500)
-      .json({ message: "Error al conectar con la base de datos" });
-  }
-
+  const connection = await connectDb();
   try {
     const { username, password } = req.body;
 
-    const query = `
-            INSERT INTO users (username, password)
-            VALUES (?, ?)`;
+    const verifyUserQuery = `
+    SELECT * FROM users
+    WHERE username = ?`;
 
-    const checkQuery = `
-            SELECT * FROM users
-            WHERE username = ?`;
+    const createUserQuery = `
+    INSERT INTO users (username, password)
+    VALUES (?, ?)`;
 
-    const [checkUser] = await connection.execute(checkQuery, [username]);
+    const [existingUser] = await connection.execute(verifyUserQuery, [
+      username,
+    ]);
 
-    if (checkUser.length > 0) {
-      return res.status(400).json({ message: "Usuario ya registrado" });
+    if (existingUser.length > 0) {
+      return res.status(409).json({ message: "Usuario Existente ❌" });
     }
 
-    await connection.execute(query, [username, password]);
+    await connection.execute(createUserQuery, [username, password]);
 
-    return res.json({
-      message: "Usuario registrado",
-    });
+    return res.json({ message: "Usuario registrado" });
   } catch (error) {
-    return res.status(500).json({ message: "Error en el servidor" });
+    return res.status(500).json({ message: "Error ❌" });
   }
 };
 
 export const login = async (req, res) => {
-  let connection;
-  try {
-    connection = await connectDb();
-  } catch (error) {
-    return res
-      .status(500)
-      .json({ message: "Error al conectar con la base de datos" });
-  }
-
+  const connection = await connectDb();
   try {
     const { username, password } = req.body;
 
